@@ -2,6 +2,6 @@ dataloader:
   start: 2020-01-01
   end: 2020-12-31
   features:
-    - "pri ch spot €/mwh cet h a"
-    - "pri ch intraday €/mwh cet h a"
+    actual_spot_price: "pri ch spot €/mwh cet h a"
+    volume_weighted_intraday_price: "pri ch intraday €/mwh cet h a"
   

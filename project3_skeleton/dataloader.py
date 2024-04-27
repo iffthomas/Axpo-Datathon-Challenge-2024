@@ -1,8 +1,6 @@
 import yaml
 import wapi
 import pandas as pd
-client_id = "V-7ZdbL68ZnNnomRbxibkAqQUhHO_CAz"
-client_secret = "MZjUanX9sZ0SB.KIleyNnUlA3ug12wSL.neeB8anRD8LGRgfjdmD-XfqG0i.yEzHy3CxKtl8SdLiaRp.48Gx2e-eoQLlYaw_8UrX"
 
 class Dataloader():
     def __init__(self, config_path, api_config_path):
@@ -23,9 +21,10 @@ class Dataloader():
         start = self.dl_config['start']
         end = self.dl_config['end']
         for signal_name in self.dl_config['features']:
-            time_series[signal_name] = self.load_ts(signal_name, start, end)
+            time_series[signal_name] = self.load_ts(self.dl_config['features'][signal_name], start, end)
         
         ts_df = self.merge_ts(time_series)    
+        #ts_df.dropna(inplace=True)
         return ts_df
     def load_ts(self, signal_name, start, end):
         session = wapi.Session(client_id=client_id, client_secret=client_secret)
@@ -33,6 +32,8 @@ class Dataloader():
         ts = curve.get_data(data_from=start, data_to=end)
         ts_df = ts.to_pandas().to_frame()
         ts_df['timestamp'] = ts_df.index
+        ts_df['timestamp'] = ts_df['timestamp'].apply(lambda x: x.tz_localize(None))
+        ts_df.rename(columns={signal_name: 'value'}, inplace=True)
         return ts_df
     
     def merge_ts(self, time_series):
@@ -41,3 +42,5 @@ class Dataloader():
         for df in df_list[1:]:
             ts_df = ts_df.merge(df, how='outer', on='timestamp')
         return ts_df
+    
+    
