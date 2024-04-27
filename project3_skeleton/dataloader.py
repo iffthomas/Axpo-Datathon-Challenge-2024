@@ -27,7 +27,7 @@ class Dataloader():
         #ts_df.dropna(inplace=True)
         return ts_df
     def load_ts(self, signal_name, start, end):
-        session = wapi.Session(client_id=client_id, client_secret=client_secret)
+        session = wapi.Session(client_id=self.client_id, client_secret=self.client_secret)
         curve = session.get_curve(name=signal_name)
         ts = curve.get_data(data_from=start, data_to=end)
         ts_df = ts.to_pandas().to_frame()

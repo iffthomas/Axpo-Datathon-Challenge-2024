@@ -8,7 +8,7 @@ class Evaluator():
         self.result_df = pd.read_csv(csv_path) if csv_path else result_df
         self.add_start_end(evalution_config_path, start, end)
         self.time_series = self.load_time_series(evalution_config_path, api_config_path)
-        import pdb; pdb.set_trace()
+
     def load_time_series(self, evalution_config_path, api_config_path):
         dl = Dataloader(evalution_config_path, api_config_path)
         time_series = dl.load()
@@ -28,7 +28,7 @@ class Evaluator():
     def evaluate(self):
         self.evaluation_df = pd.DataFrame()
         
-        self.evaluation_df["imbalance"] = self.compute_imbalance()
+        self.evaluation_df["imbalance"], self.evaluation_df['actual_pv_production'] = self.compute_imbalance()
         self.evaluation_df["pnl_spot"] = self.compute_pnl_spot()
         self.evaluation_df["pnl_id"] = self.compute_pnl_id()
         self.evaluation_df["pnl_imbalance"] = self.compute_pnl_imbalance()
@@ -42,7 +42,7 @@ class Evaluator():
         imbalance_df['E_sold_spot'] = self.result_df['E_sold_spot']
         imbalance_df['E_sold_intraday'] = self.result_df['E_sold_intraday']
         imbalance = imbalance_df.apply(lambda row: row.our_actual_pv_production - row.E_sold_spot - row.E_sold_intraday, axis=1)
-        return imbalance
+        return imbalance, imbalance_df['our_actual_pv_production']
         
     def compute_pnl_spot(self):
         pnl_spot_df = pd.DataFrame(self.time_series[['spot_price']])
