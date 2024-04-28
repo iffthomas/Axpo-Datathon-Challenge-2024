@@ -64,6 +64,6 @@ class Evaluator():
     def compute_pnl_imbalance(self):
         pnl_imbalance_df = pd.DataFrame(self.evaluation_df['imbalance'])
         pnl_imbalance_df['spot_price'] = self.time_series[['spot_price']]
-        pnl_imbalance = pnl_imbalance_df.apply(lambda row: - row.imbalance * row.spot_price * 1.3 if row.imbalance > 0 else row.imbalance * row.spot_price * 0.7, axis=1)
+        pnl_imbalance = pnl_imbalance_df.apply(lambda row: row.imbalance * row.spot_price * 1.3 if row.imbalance < 0 else row.imbalance * row.spot_price * 0.7, axis=1)
         return pnl_imbalance
     
