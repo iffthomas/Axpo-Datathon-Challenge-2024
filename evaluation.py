@@ -7,13 +7,16 @@ class Evaluator():
     def __init__(self, start, end, evalution_config_path, dataframe, result_df=None, csv_path=None):
         self.result_df = pd.read_csv(csv_path) if csv_path else result_df
         self.add_start_end(evalution_config_path, start, end)
-        self.time_series = self.load_time_series(dataframe)
+        self.time_series = self.load_time_series(dataframe, start, end)
+        self.time_series.reset_index(drop=True, inplace=True)
 
-    def load_time_series(self, dataframe):
+    def load_time_series(self, dataframe, start, end):
         mask = dataframe['timestamp'].apply(lambda row:  True if row.minute == 0  else False)
         dataframe = dataframe[mask]
         dataframe.reset_index(drop=True, inplace=True)
-        return dataframe
+
+        mask = (dataframe['timestamp'] >= start) & (dataframe['timestamp'] <= end)
+        return dataframe.loc[mask]
     
     def add_start_end(self, evalution_config_path, start, end):
         with open(evalution_config_path, 'r') as f:
@@ -38,6 +41,8 @@ class Evaluator():
         imbalance_df = pd.DataFrame(self.time_series[['actual_pv_production']])
         imbalance_df['installed_pv_capacity'] = self.time_series['installed_pv_capacity']
         imbalance_df['our_actual_pv_production'] = imbalance_df.apply(lambda row: row.actual_pv_production * 10.0/row.installed_pv_capacity, axis=1)
+        imbalance_df.reset_index(drop=True, inplace=True)
+        self.result_df.reset_index(drop=True, inplace=True)
         imbalance_df['E_sold_spot'] = self.result_df['E_sold_spot']
         imbalance_df['E_sold_intraday'] = self.result_df['E_sold_intraday']
         imbalance = imbalance_df.apply(lambda row: row.our_actual_pv_production - row.E_sold_spot - row.E_sold_intraday, axis=1)

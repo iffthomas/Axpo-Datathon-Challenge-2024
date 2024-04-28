@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import capacity_model as C_predictor
 
 def daterange(start_date, end_date):
-    for n in range(int((end_date - start_date).days)):
+    for n in range(int((end_date - start_date).days - 1)):
         yield start_date + timedelta(n)
 
 def get_day(date, df):
@@ -16,6 +16,7 @@ def get_day(date, df):
 
 def predict_spot(tomorrow, df):
     production_yesterday = get_day(tomorrow - timedelta(days=2), df)
+    # print(f"prod yesterday {production_yesterday}")
     prediction = production_yesterday.copy()
     prediction.rename(columns={'actual_pv_production': 'E_sold_spot'}, inplace=True)
     prediction["timestamp"] = production_yesterday.timestamp + pd.Timedelta(days=2)
