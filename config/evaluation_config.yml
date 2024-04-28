@@ -1,5 +1,5 @@
 dataloader:
-  end: '2019-01-06'
+  end: '2019-01-08'
   features:
     actual_pv_production: pro ch spv mwh/h cet min15 a
     installed_pv_capacity: cap ch spv mw cet min15 a
