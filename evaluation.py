@@ -1,5 +1,4 @@
 import pandas as pd
-from dataloader import Dataloader
 import yaml
 
 class Evaluator():
@@ -35,6 +34,8 @@ class Evaluator():
         self.evaluation_df["pnl_imbalance"] = self.compute_pnl_imbalance()
         self.evaluation_df['pnl'] = self.evaluation_df.apply(lambda row: row.pnl_spot + row.pnl_id + row.pnl_imbalance, axis=1)
         result = pd.concat([self.result_df, self.evaluation_df], axis=1)
+        result.rename(columns={'actual_pv_production': 'E_prod_real',
+                          'pnl':'PnL_per_hour'}, inplace=True)
         return result
     
     def compute_imbalance(self):
