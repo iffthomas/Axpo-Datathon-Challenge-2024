@@ -1,6 +1,0 @@
-urlbase: https://api.volueinsight.com
-auth_type: OAuth
-timeout: 300
-id:  yf24xCq95gJkorzBWb16GAP4eOxQNVZR 
-secret:  sWkUzN3a8uC8QDu1V64bH3bAtCdduf74Xh8JnT_OrYZf_x2ObWdiNkOga59cB2C5Q9us9tW0bg4zFg4BfeOR7mRzui3ROZ1QHI0i
-auth_urlbase: https://auth.volueinsight.com

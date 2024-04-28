@@ -3,13 +3,13 @@ import wapi
 import pandas as pd
 
 class Dataloader():
-    def __init__(self, config_path, api_config_path):
+    def __init__(self, config_path, start_date, end_date, api_id, api_secret):
         self.dl_config = self.load_config(config_path)['dataloader']
         
-        self.api_config = self.load_config(api_config_path)
-        self.client_id = self.api_config['id']
-        self.client_secret = self.api_config['secret']
-        
+        self.client_id = api_id
+        self.client_secret = api_secret
+        self.start_date = start_date
+        self.end_date = end_date
 
     def load_config(self, config_path):
         with open(config_path, 'r') as f:
@@ -18,18 +18,23 @@ class Dataloader():
         
     def load(self):
         time_series = {}
-        start = self.dl_config['start']
-        end = self.dl_config['end']
+        start = self.start_date
+        end = self.end_date
+
+        session = wapi.Session(client_id=self.client_id, client_secret=self.client_secret, timeout=300)
         for signal_name in self.dl_config['features']:
-            time_series[signal_name] = self.load_ts(self.dl_config['features'][signal_name], start, end)
+            time_series[signal_name] = self.load_ts(session, self.dl_config['features'][signal_name], start, end)
+            #print(time_series[signal_name])
+
         
         ts_df = self.merge_ts(time_series)    
         #ts_df.dropna(inplace=True)
         return ts_df
-    def load_ts(self, signal_name, start, end):
-        session = wapi.Session(client_id=self.client_id, client_secret=self.client_secret)
+    
+    def load_ts(self, session, signal_name, start, end):
+        
         curve = session.get_curve(name=signal_name)
-        ts = curve.get_data(data_from=start, data_to=end)
+        ts = curve.get_data(data_from=start, data_to=end, frequency="h", function="AVERAGE")
         ts_df = ts.to_pandas().to_frame()
         ts_df['timestamp'] = ts_df.index
         ts_df['timestamp'] = ts_df['timestamp'].apply(lambda x: x.tz_localize(None))
