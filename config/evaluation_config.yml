@@ -1,0 +1,8 @@
+dataloader:
+  end: '2024-01-31'
+  features:
+    actual_pv_production: pro ch spv mwh/h cet min15 a
+    installed_pv_capacity: cap ch spv mw cet min15 a
+    intraday_price: "pri ch intraday \u20AC/mwh cet h a"
+    spot_price: "pri ch spot \u20AC/mwh cet h a"
+  start: '2023-08-01'
